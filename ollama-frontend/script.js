@@ -91,11 +91,20 @@ document.addEventListener('DOMContentLoaded', () => {
             aiResponseBox.style.display = 'none'; // Hide AI response box after response
             let content = data.message.content;
 
-            // Process code blocks and format content with HTML
-            content = content.replace(/```([\w-]+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-                const highlightedCode = hljs.highlight(code, { language: lang || 'plaintext' }).value;
-                return `<div class="code-message"><pre><code class="hljs language-${lang}">${highlightedCode}</code></pre></div>`;
-            });
+            // Format content with markdown-like paragraph breaks and code blocks
+            content = content.split('\n\n').map(paragraph => {
+                if (paragraph.startsWith('```')) {
+                    const codeBlock = paragraph.match(/```([\w-]+)?\n([\s\S]*?)```/s);
+                    if (codeBlock) {
+                        const lang = codeBlock[1] || 'plaintext';
+                        const code = codeBlock[2];
+                        const highlightedCode = hljs.highlight(code, { language: lang }).value;
+                        return `<div class="code-message"><pre><code class="hljs language-${lang}">${highlightedCode}</code></pre></div>`;
+                    }
+                }
+                return `<p>${paragraph}</p>`;
+            }).join('');
+
 
             responseDiv.innerHTML = `Ollama: ${content}`;
             chatLog.appendChild(responseDiv);
