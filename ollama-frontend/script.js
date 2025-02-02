@@ -91,19 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
             aiResponseBox.style.display = 'none'; // Hide AI response box after response
             let content = data.message.content;
 
-            // Format content with markdown-like paragraph breaks and code blocks
-            content = content.split('\n\n').map(paragraph => {
-                if (paragraph.startsWith('```')) {
-                    const codeBlock = paragraph.match(/```([\w-]+)?\n([\s\S]*?)```/s);
-                    if (codeBlock) {
-                        const lang = codeBlock[1] || 'plaintext';
-                        const code = codeBlock[2];
-                        const highlightedCode = hljs.highlight(code, { language: lang }).value;
-                        return `<div class="code-message"><pre><code class="hljs language-${lang}">${highlightedCode}</code></pre></div>`;
-                    }
-                }
-                return `<p>${paragraph}</p>`;
-            }).join('');
+            // Use marked.js to convert markdown to HTML
+            content = marked.parse(content);
 
 
             responseDiv.innerHTML = `Ollama: ${content}`;
