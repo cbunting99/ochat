@@ -69,19 +69,66 @@ h1 {
     background-color: #475569; /* Slightly different background for alternating messages */
 }
 
+.code-message {
+    background-color: #2d3748; /* Different background for code messages */
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    overflow-x: auto; /* Enable horizontal scroll for long code lines */
+}
+
+.code-message pre {
+    background-color: #2d3748 !important; /* Ensure highlight.js bg is overridden */
+    color: #f8f8f8;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 #chat-log div.processing::after {
-    content: ' \u2026'; /* Ellipsis for processing animation */
-    display: inline-block;
-    animation: ellipsis 1s infinite steps(3);
+    content: '';
 }
 
-@keyframes ellipsis {
-    to { width: 1.2em; }
+#ai-response-box {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    background-color: #475569;
+}
+
+.typing-indicator {
+    display: flex;
+    justify-content: center;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    margin: 0 2px;
+    background-color: #f8f8f8;
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: typing 1s infinite alternate;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    to {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
 }
 
 

@@ -5,11 +5,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('send-button');
     const fileButton = document.getElementById('file-button');
     const fileUpload = document.getElementById('file-upload');
+    const aiResponseBox = document.getElementById('ai-response-box');
+
+    // Load selected model from local storage
+    const loadSelectedModel = () => {
+        return localStorage.getItem('selectedModel');
+    };
+
+    // Save selected model to local storage
+    const saveSelectedModel = (model) => {
+        localStorage.setItem('selectedModel', model);
+    };
 
     // Fetch models from Ollama API
     const fetchModels = async () => {
         try {
             const response = await fetch('http://localhost:11434/api/tags');
+            if (!response.ok) {
+                 throw new Error("HTTP error! status: " + response.status);
+            }
             if (!response.ok) {
                  throw new Error("HTTP error! status: " + response.status);
             }
@@ -21,6 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 option.text = model.name;
                 modelDropdown.appendChild(option);
             });
+
+            // Set selected model from local storage or default to first model
+            const selectedModel = loadSelectedModel();
+            if (selectedModel) {
+                modelDropdown.value = selectedModel;
+            } else if (data.models.length > 0) {
+                modelDropdown.value = data.models[0].name;
+                saveSelectedModel(data.models[0].name);
+            }
         } catch (error) {
             console.error('Failed to fetch models:', error);
             modelDropdown.innerHTML = '<option value="" disabled>Error loading models</option>';
@@ -28,6 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     fetchModels();
+
+    // Event listener for model dropdown change
+    modelDropdown.addEventListener('change', (event) => {
+        saveSelectedModel(event.target.value);
+    });
+
 
     // Send message to Ollama API
     const sendMessage = async (message, model) => {
@@ -38,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatLog.appendChild(messageDiv);
 
         chatInput.value = '';
+        aiResponseBox.style.display = 'block'; // Show AI response box
 
         try {
             const response = await fetch('http://localhost:11434/api/chat', {
@@ -58,50 +88,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data  = await response.json();
             const responseDiv = document.createElement('div');
-            responseDiv.classList.add('processing'); // Add processing class
-            const codeView = document.getElementById('code-view');
-            const codeRegex = /```([\w-]+)?\n([\s\S]*?)```/g;
+            aiResponseBox.style.display = 'none'; // Hide AI response box after response
             let content = data.message.content;
-            let match;
-            let codeFound = false;
 
-            while ((match = codeRegex.exec(content)) !== null) {
-                codeFound = true;
-                const lang = match[1] || 'plaintext';
-                const code = match[2];
-                const codeBlock = document.createElement('pre');
-                codeBlock.innerHTML = `<code class="language-${lang}">${code}</code>`;
-                const copyButton = document.createElement('button');
-                copyButton.textContent = 'Copy';
-                copyButton.onclick = () => {
-                    navigator.clipboard.writeText(code).then(() => {
-                        copyButton.textContent = 'Copied!';
-                        setTimeout(() => {
-                            copyButton.textContent = 'Copy';
-                        }, 2000);
-                    });
-                };
-                codeBlock.appendChild(copyButton);
-                codeView.appendChild(codeBlock);
-                content = content.replace(match[0], '');
-            }
+            // Process code blocks and format content with HTML
+            content = content.replace(/```([\w-]+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+                const highlightedCode = hljs.highlight(code, { language: lang || 'plaintext' }).value;
+                return `<div class="code-message"><pre><code class="hljs language-${lang}">${highlightedCode}</code></pre></div>`;
+            });
 
-            if (codeFound) {
-                codeView.style.display = 'block';
-                hljs.highlightAll();
-                const closeButton = document.createElement('button');
-                closeButton.textContent = 'Close Code View';
-                closeButton.onclick = () => {
-                    codeView.style.display = 'none';
-                    codeView.innerHTML = '';
-                };
-                codeView.appendChild(closeButton);
-            }
-
-            responseDiv.textContent = `Ollama: ${content}`;
+            responseDiv.innerHTML = `Ollama: ${content}`;
             chatLog.appendChild(responseDiv);
             chatLog.scrollTop = chatLog.scrollHeight;
-            responseDiv.classList.remove('processing'); // Remove processing class on response
+            hljs.highlightAll(); // Re-highlight any new code blocks
 
 
         } catch (error) {
@@ -109,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const errorDiv = document.createElement('div');
             errorDiv.textContent = 'Error sending message.';
             chatLog.appendChild(errorDiv);
-            responseDiv.classList.remove('processing'); // Remove processing class on error
+            aiResponseBox.style.display = 'none'; // Hide AI response box on error
         }
     };
 
