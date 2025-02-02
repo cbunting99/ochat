@@ -57,37 +57,306 @@ h1 {
     margin-bottom: 10px;
 }
 
+#chat-log div.user-message {
+    background-color: #e0f2fe; /* Light blue for user messages */
+    color: #075985; /* Darker blue text for user messages */
+    align-self: flex-end; /* Align user messages to the right */
+}
+
+#chat-log div.ai-message {
+    background-color: #f0f9ff; /* Very light blue for AI messages */
+    color: #0f172a; /* Dark text for AI messages */
+    align-self: flex-start; /* Align AI messages to the left */
+}
+
+#chat-log div.code-message {
+    background-color: #edf2f7; /* Light gray for code messages */
+    color: #1a202c; /* Dark text for code messages */
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow-x: auto;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.container {
+    width: 95%; /* Wider container */
+    max-width: 1200px; /* Increased max width */
+    margin-top: 30px;
+    margin-bottom: 30px;
+    background-color: #ffffff; /* White container background */
+    padding: 30px; /* Increased padding */
+    border-radius: 12px; /* More rounded corners */
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1); /* Softer shadow */
+    display: flex; /* Flex layout for header and chat area */
+    flex-direction: column;
+    align-items: stretch; /* Stretch items to fill container width */
+}
+
+h1 {
+    color: #3b82f6; /* Primary color for heading */
+    text-align: left; /* Align heading to the left */
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb; /* Light border under heading */
+}
+
+.model-selector {
+    margin-bottom: 25px;
+}
+
+.model-selector label {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280; /* Muted label color */
+    font-weight: 500;
+}
+
+.model-selector select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e5e7eb; /* Thicker border */
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #374151; /* Darker text for select */
+    font-size: 16px;
+    appearance: none; /* Remove default arrow in some browsers */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position-x: 100%;
+    background-position-y: 5px;
+    padding-right: 30px; /* Make space for the arrow */
+}
+
+.model-selector select:focus {
+    outline: none;
+    border-color: #3b82f6; /* Highlight color on focus */
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* Focus ring */
+}
+
+
+.chat-container {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    height: 500px; /* Increased height */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-color: #f9fafb; /* Very light gray chat background */
+    margin-bottom: 20px; /* Spacing before input area */
+}
+
+#chat-log {
+    flex-grow: 1;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column; /* Ensure messages stack properly */
+}
+
 #chat-log div {
-    padding: 8px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    background-color: #334155; /* Message background color */
-    animation: fadeIn 0.5s ease-out; /* Fade-in animation */
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+    word-wrap: break-word;
 }
 
-#chat-log div:nth-child(odd) {
-    background-color: #475569; /* Slightly different background for alternating messages */
+#chat-log div.user-message {
+    background-color: #e0f2fe; /* Light blue for user messages */
+    color: #075985; /* Darker blue text for user messages */
+    align-self: flex-end; /* Align user messages to the right */
 }
 
-.code-message {
-    background-color: #2d3748; /* Different background for code messages */
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    overflow-x: auto; /* Enable horizontal scroll for long code lines */
+#chat-log div.ai-message {
+    background-color: #f0f9ff; /* Very light blue for AI messages */
+    color: #0f172a; /* Dark text for AI messages */
+    align-self: flex-start; /* Align AI messages to the left */
 }
 
-.code-message pre {
-    background-color: #2d3748 !important; /* Ensure highlight.js bg is overridden */
-    color: #f8f8f8;
-    border: none;
+#chat-log div.code-message {
+    background-color: #edf2f7; /* Light gray for code messages */
+    color: #1a202c; /* Dark text for code messages */
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow-x: auto;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+#chat-log div.code-message pre {
+    background-color: transparent !important;
+    color: inherit;
     padding: 0;
     margin: 0;
 }
 
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+#chat-log div.processing::after {
+    content: '';
+}
+
+#ai-response-box {
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #f0f9ff; /* Very light blue for AI response box */
+    color: #0f172a;
+}
+
+.typing-indicator {
+    display: flex;
+    justify-content: center;
+}
+
+.typing-indicator span {
+    width: 10px;
+    height: 10px;
+    margin: 0 3px;
+    background-color: #6b7280; /* Muted color for typing dots */
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: typing 1.2s infinite alternate;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+@keyframes typing {
+    to {
+        opacity: 1;
+        transform: translateY(-3px);
+    }
+}
+
+
+#code-view {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 60px;
+    background-color: #edf2f7; /* Light gray code view background */
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    overflow: auto;
+    white-space: pre-wrap;
+    display: none;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#code-view pre {
+    background-color: transparent !important;
+    color: #1a202c;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+#code-view button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #6b7280;
+    color: #f9fafb;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+#code-view button:hover {
+    background-color: #525a64;
+}
+
+
+.input-area {
+    display: flex;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 2px solid #e5e7eb; /* Separator line */
+}
+
+.input-area input[type="text"] {
+    flex-grow: 1;
+    padding: 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    margin-right: 15px;
+    font-size: 16px;
+    color: #374151;
+}
+
+.input-area input[type="text"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.input-area button, .input-area input[type="file"] + button, #file-button {
+    padding: 12px 20px;
+    background-color: #3b82f6; /* Primary button color */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.input-area button:hover, .input-area input[type="file"] + button:hover, #file-button:hover {
+    background-color: #2563eb; /* Darker shade on hover */
+}
+
+
+.input-area input[type="file"] {
+    display: none;
+}
+
+#file-button {
+    background-color: #6b7280; /* Grey file button */
+    color: #f9fafb;
+}
+
+#file-button:hover {
+    background-color: #525a64;
+}
+
+
+/* Highlight.js theme adjustments for light background - using 'github' theme */
+/* Ensure you include a 'github' theme CSS for highlight.js or customize colors */
+@import 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+
+/* Additional adjustments if needed, e.g., for comment color contrast */
+.hljs-comment,
+.hljs-quote {
+    color: #5e646f; /* Adjust comment color for better contrast */
+    font-style: italic;
 }
 
 #chat-log div.processing::after {
