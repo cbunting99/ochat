@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ollama Chat</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
@@ -13,28 +12,28 @@
 </head>
 <body>
     <div class="container">
-        <h1>Ollama Chat</h1>
-        <div class="model-selector">
-            <label for="model-dropdown">Select a model:</label>
-            <select id="model-dropdown">
+        <h1 class="mb-4">Ollama Chat</h1>
+        <div class="model-selector mb-3">
+            <label for="model-dropdown" class="form-label">Select a model:</label>
+            <select id="model-dropdown" class="form-select">
                 <option value="" disabled selected>Loading models...</option>
             </select>
         </div>
-        <div class="chat-container">
-            <div id="chat-log"></div>
-            <div id="ai-response-box" style="display:none;">
-                <div class="typing-indicator">
+        <div class="chat-container border rounded p-3">
+            <div id="chat-log" class="mb-3"></div>
+            <div id="ai-response-box" class="mb-3" style="display:none;">
+                <div class="typing-indicator d-flex justify-content-center">
                     <span></span>
                     <span></span>
                     <span></span>
                 </div>
             </div>
-            <div id="code-view"></div>
-            <div class="input-area">
-                <input type="text" id="chat-input" placeholder="Type your message...">
+            <div id="code-view" class="p-3 rounded" style="display:none;"></div>
+            <div class="input-area d-flex align-items-center">
+                <input type="text" id="chat-input" class="form-control flex-grow-1 me-2" placeholder="Type your message...">
                 <input type="file" id="file-upload" style="display: none;">
-                <button id="file-button">Attach File</button>
-                <button id="send-button">Send</button>
+                <button id="file-button" class="btn btn-secondary me-2">Attach File</button>
+                <button id="send-button" class="btn btn-primary">Send</button>
             </div>
         </div>
     </div>
