@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollama Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body {
+            background-color: #1a202c;
+            color: #f9fafb;
+        }
+        .chat-container {
+            background-color: #2d3748;
+            height: 60vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+        #chat-log div.user-message {
+            background-color: #4a5568;
+            color: #f9fafb;
+            align-self: flex-end;
+            margin-left: auto;
+            margin-right: 0;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        #chat-log div.ai-message {
+            background-color: #374151;
+            color: #f9fafb;
+            align-self: flex-start;
+            margin-right: auto;
+            margin-left: 0;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .input-area input[type="text"] {
+            max-width: 70%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Ollama Chat</h1>
+        <div class="chat-container border rounded p-3 mb-3">
+            <div id="chat-log" class="d-flex flex-column-reverse"></div>
+            <div id="ai-response-box" class="mb-3" style="display:none;">
+                <div class="typing-indicator d-flex justify-content-center">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div id="code-view" class="p-3 rounded" style="display:none;"></div>
+        </div>
+        <div class="model-selector mb-3">
+            <label for="model-dropdown" class="form-label">Select a model:</label>
+            <select id="model-dropdown" class="form-select">
+                <option value="" disabled selected>Loading models...</option>
+            </select>
+        </div>
+        <div class="input-area d-flex align-items-center">
+            <input type="text" id="chat-input" class="form-control flex-grow-1 me-2" placeholder="Type your message...">
+            <input type="file" id="file-upload" style="display: none;">
+            <button id="file-button" class="btn btn-secondary me-2">Attach File</button>
+            <button id="send-button" class="btn btn-primary">Send</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modelDropdown = document.getElementById('model-dropdown');
+            const chatLog = document.getElementById('chat-log');
+            const chatInput = document.getElementById('chat-input');
+            const sendButton = document.getElementById('send-button');
+            const fileButton = document.getElementById('file-button');
+            const fileUpload = document.getElementById('file-upload');
+            const aiResponseBox = document.getElementById('ai-response-box');
+
+            // Load selected model from local storage
+            const loadSelectedModel = () => {
+                return localStorage.getItem('selectedModel');
+            };
+
+            // Save selected model to local storage
+            const saveSelectedModel = (model) => {
+                localStorage.setItem('selectedModel', model);
+            };
+
+            // Fetch models from Ollama API
+            const fetchModels = async () => {
+                try {
+                    const response = await fetch('/api/models');
+                    if (!response.ok) {
+                        throw new Error("HTTP error! status: " + response.status);
+                    }
+                    const data = await response.json();
+                    modelDropdown.innerHTML = '';
+                    data.models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.name;
+                        option.text = model.name;
+                        modelDropdown.appendChild(option);
+                    });
+
+                    // Set selected model from local storage or default to first model
+                    const selectedModel = loadSelectedModel();
+                    if (selectedModel) {
+                        modelDropdown.value = selectedModel;
+                    } else if (data.models.length > 0) {
+                        modelDropdown.value = data.models[0].name;
+                        saveSelectedModel(data.models[0].name);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch models:', error);
+                    modelDropdown.innerHTML = '<option value="" disabled>Error loading models</option>';
+                }
+            };
+
+            fetchModels();
+
+            // Event listener for model dropdown change
+            modelDropdown.addEventListener('change', (event) => {
+                saveSelectedModel(event.target.value);
+            });
+
+
+            // Send message to Ollama API
+            const sendMessage = async (message, model) => {
+                if (!message || !model) return;
+
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = `User: ${message}`;
+                messageDiv.classList.add('user-message');
+                chatLog.appendChild(messageDiv);
+
+                chatInput.value = '';
+                aiResponseBox.style.display = 'block'; // Show AI response box
+
+                try {
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            model: model,
+                            messages: [{ role: 'user', content: message }],
+                            stream: false
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("HTTP error! status: " + response.status);
+                    }
+
+                    const data  = await response.json();
+                    const responseDiv = document.createElement('div');
+                    aiResponseBox.style.display = 'none'; // Hide AI response box after response
+                    let content = data.message.content;
+
+                    // Use marked.js to convert markdown to HTML
+                    content = marked.parse(content);
+
+
+                    responseDiv.innerHTML = `Ollama: ${content}`;
+                    responseDiv.classList.add('ai-message');
+                    chatLog.appendChild(responseDiv);
+                    chatLog.scrollTop = 0;
+                    hljs.highlightAll(); // Re-highlight any new code blocks
+
+
+                } catch (error) {
+                    console.error('Failed to send message:', error);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.textContent = 'Error sending message.';
+                    chatLog.appendChild(errorDiv);
+                    aiResponseBox.style.display = 'none'; // Hide AI response box on error
+                }
+            };
+
+            fileButton.addEventListener('click', () => {
+                fileUpload.click(); // Trigger file input when button is clicked
+            });
+
+            fileUpload.addEventListener('change', () => {
+                const file = fileUpload.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const fileContent = event.target.result;
+                        chatInput.value += `\n\nFile Content:\n${file.name}\n\`\`\`\n${fileContent}\n\`\`\``;
+                    };
+                    reader.onerror = (error) => {
+                        console.error("Error reading file:", error);
+                        alert("Failed to read file.");
+                    };
+                    reader.readAsText(file); // Or readAsDataURL, etc., depending on needs
+                }
+            });
+
+            sendButton.addEventListener('click', () => {
+                const message = chatInput.value.trim();
+                const selectedModel = modelDropdown.value;
+                sendMessage(message, selectedModel);
+            });
+
+            chatInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const message = chatInput.value.trim();
+                    const selectedModel = modelDropdown.value;
+                    sendMessage(message, selectedModel);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
