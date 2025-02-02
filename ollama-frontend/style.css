@@ -1,18 +1,24 @@
 body {
-    font-family: sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #f0f0f0;
+    background-color: #1e293b; /* Dark blue-gray background */
+    color: #f8f8f8; /* Light text color */
 }
 
 .container {
     width: 80%;
     max-width: 800px;
     margin: 0 auto;
-    background-color: #fff;
+    background-color: #334155; /* Slightly lighter dark background for container */
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Stronger shadow for depth */
+}
+
+h1 {
+    color: #cbd5e0; /* Lighter text for heading */
+    text-align: center;
 }
 
 .model-selector {
@@ -22,6 +28,162 @@ body {
 .model-selector label {
     display: block;
     margin-bottom: 5px;
+    color: #cbd5e0;
+}
+
+.model-selector select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #475569; /* Darker border for select */
+    border-radius: 6px;
+    background-color: #475569; /* Dark background for select */
+    color: #f8f8f8;
+}
+
+.chat-container {
+    border: 1px solid #475569;
+    border-radius: 8px;
+    padding: 15px;
+    height: 400px;
+    overflow-y: auto; /* Changed to auto for scroll when needed */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-color: #243047; /* Darker background for chat container */
+}
+
+#chat-log {
+    flex-grow: 1;
+    margin-bottom: 10px;
+}
+
+#chat-log div {
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    background-color: #334155; /* Message background color */
+    animation: fadeIn 0.5s ease-out; /* Fade-in animation */
+}
+
+#chat-log div:nth-child(odd) {
+    background-color: #475569; /* Slightly different background for alternating messages */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#chat-log div.processing::after {
+    content: ' \u2026'; /* Ellipsis for processing animation */
+    display: inline-block;
+    animation: ellipsis 1s infinite steps(3);
+}
+
+@keyframes ellipsis {
+    to { width: 1.2em; }
+}
+
+
+#code-view {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 50px; /* Adjust bottom to account for close button */
+    background-color: #2d3748; /* Darker code view background */
+    border: 1px solid #5a677d; /* Darker border for code view */
+    border-radius: 8px;
+    padding: 15px;
+    overflow: auto;
+    white-space: pre-wrap;
+    display: none;
+    z-index: 10; /* Ensure it's on top */
+}
+
+#code-view pre {
+    background-color: #2d3748 !important; /* Ensure highlight.js bg is overridden */
+    color: #f8f8f8;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+#code-view button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #64748b;
+    color: #f8f8f8;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+.input-area {
+    display: flex;
+    align-items: center;
+    padding-top: 10px; /* Add padding to separate from chat log */
+}
+
+.input-area input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    margin-right: 10px;
+    background-color: #475569;
+    color: #f8f8f8;
+}
+
+.input-area button, .input-area input[type="file"] + button, #file-button {
+    padding: 10px 15px;
+    background-color: #43a197; /* Teal send button */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.input-area button:hover, .input-area input[type="file"] + button:hover, #file-button:hover {
+    background-color: #368078; /* Darker teal on hover */
+}
+
+
+.input-area input[type="file"] {
+    display: none;
+}
+
+#file-button {
+    background-color: #64748b; /* Grey file button */
+}
+#file-button:hover {
+    background-color: #5a677d;
+}
+
+
+/* Highlight.js theme adjustments for dark background */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-tag {
+    color: #c778dd; /* Example keyword color */
+}
+
+.hljs-number {
+    color: #f97583; /* Example number color */
+}
+
+.hljs-string {
+    color: #98c379; /* Example string color */
+}
+
+.hljs-comment {
+    color: #6b7a8e; /* Example comment color */
+    font-style: italic;
 }
 
 .model-selector select {

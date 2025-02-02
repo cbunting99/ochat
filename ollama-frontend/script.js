@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data  = await response.json();
             const responseDiv = document.createElement('div');
+            responseDiv.classList.add('processing'); // Add processing class
             const codeView = document.getElementById('code-view');
             const codeRegex = /```([\w-]+)?\n([\s\S]*?)```/g;
             let content = data.message.content;
@@ -100,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             responseDiv.textContent = `Ollama: ${content}`;
             chatLog.appendChild(responseDiv);
             chatLog.scrollTop = chatLog.scrollHeight;
+            responseDiv.classList.remove('processing'); // Remove processing class on response
 
 
         } catch (error) {
@@ -107,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const errorDiv = document.createElement('div');
             errorDiv.textContent = 'Error sending message.';
             chatLog.appendChild(errorDiv);
+            responseDiv.classList.remove('processing'); // Remove processing class on error
         }
     };
 
