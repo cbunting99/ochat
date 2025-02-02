@@ -51,9 +51,9 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container d-flex flex-column">
         <h1 class="mb-4">Ollama Chat</h1>
-        <div class="chat-container border rounded p-3 mb-3">
+        <div class="chat-container border rounded p-3 mb-auto" style="overflow-y: auto; display: flex; flex-direction: column-reverse;">
             <div id="chat-log" class="d-flex flex-column-reverse"></div>
             <div id="ai-response-box" class="mb-3" style="display:none;">
                 <div class="typing-indicator d-flex justify-content-center">
