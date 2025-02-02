@@ -64,17 +64,19 @@
             </div>
             <div id="code-view" class="p-3 rounded" style="display:none;"></div>
         </div>
-        <div class="model-selector mb-3">
-            <label for="model-dropdown" class="form-label">Select a model:</label>
-            <select id="model-dropdown" class="form-select">
-                <option value="" disabled selected>Loading models...</option>
-            </select>
-        </div>
-        <div class="input-area d-flex align-items-center">
-            <input type="text" id="chat-input" class="form-control flex-grow-1 me-2" placeholder="Type your message...">
-            <input type="file" id="file-upload" style="display: none;">
-            <button id="file-button" class="btn btn-secondary me-2">Attach File</button>
-            <button id="send-button" class="btn btn-primary">Send</button>
+        <div class="d-flex flex-column mt-3">
+            <div class="model-selector mb-3">
+                <label for="model-dropdown" class="form-label">Select a model:</label>
+                <select id="model-dropdown" class="form-select">
+                    <option value="" disabled selected>Loading models...</option>
+                </select>
+            </div>
+            <div class="input-area d-flex align-items-center">
+                <input type="text" id="chat-input" class="form-control flex-grow-1 me-2" placeholder="Type your message...">
+                <input type="file" id="file-upload" style="display: none;">
+                <button id="file-button" class="btn btn-secondary me-2">Attach File</button>
+                <button id="send-button" class="btn btn-primary">Send</button>
+            </div>
         </div>
     </div>
     <script>
