@@ -56,7 +56,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data  = await response.json();
             const responseDiv = document.createElement('div');
-            responseDiv.textContent = `Ollama: ${data.message.content}`;
+            const codeView = document.getElementById('code-view');
+            const codeRegex = /```([\w-]+)?\n([\s\S]*?)```/g;
+            let content = data.message.content;
+            let match;
+            let codeFound = false;
+
+            while ((match = codeRegex.exec(content)) !== null) {
+                codeFound = true;
+                const lang = match[1] || 'plaintext';
+                const code = match[2];
+                const codeBlock = document.createElement('pre');
+                codeBlock.innerHTML = `<code class="language-${lang}">${code}</code>`;
+                codeView.appendChild(codeBlock);
+                content = content.replace(match[0], '');
+            }
+
+            if (codeFound) {
+                codeView.style.display = 'block';
+                hljs.highlightAll();
+                const closeButton = document.createElement('button');
+                closeButton.textContent = 'Close Code View';
+                closeButton.onclick = () => {
+                    codeView.style.display = 'none';
+                    codeView.innerHTML = '';
+                };
+                codeView.appendChild(closeButton);
+            }
+
+            responseDiv.textContent = `Ollama: ${content}`;
             chatLog.appendChild(responseDiv);
             chatLog.scrollTop = chatLog.scrollHeight;
 

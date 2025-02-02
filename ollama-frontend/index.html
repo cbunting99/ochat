@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ollama Chat</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </head>
 <body>
     <div class="container">
@@ -17,6 +20,7 @@
         </div>
         <div class="chat-container">
             <div id="chat-log"></div>
+            <div id="code-view"></div>
             <div class="input-area">
                 <input type="text" id="chat-input" placeholder="Type your message...">
                 <button id="send-button">Send</button>
