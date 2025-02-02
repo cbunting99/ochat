@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatLog = document.getElementById('chat-log');
     const chatInput = document.getElementById('chat-input');
     const sendButton = document.getElementById('send-button');
+    const fileButton = document.getElementById('file-button');
+    const fileUpload = document.getElementById('file-upload');
 
     // Fetch models from Ollama API
     const fetchModels = async () => {
@@ -68,6 +70,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const code = match[2];
                 const codeBlock = document.createElement('pre');
                 codeBlock.innerHTML = `<code class="language-${lang}">${code}</code>`;
+                const copyButton = document.createElement('button');
+                copyButton.textContent = 'Copy';
+                copyButton.onclick = () => {
+                    navigator.clipboard.writeText(code).then(() => {
+                        copyButton.textContent = 'Copied!';
+                        setTimeout(() => {
+                            copyButton.textContent = 'Copy';
+                        }, 2000);
+                    });
+                };
+                codeBlock.appendChild(copyButton);
                 codeView.appendChild(codeBlock);
                 content = content.replace(match[0], '');
             }
@@ -96,6 +109,26 @@ document.addEventListener('DOMContentLoaded', () => {
             chatLog.appendChild(errorDiv);
         }
     };
+
+    fileButton.addEventListener('click', () => {
+        fileUpload.click(); // Trigger file input when button is clicked
+    });
+
+    fileUpload.addEventListener('change', () => {
+        const file = fileUpload.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const fileContent = event.target.result;
+                chatInput.value += `\n\nFile Content:\n${file.name}\n\`\`\`\n${fileContent}\n\`\`\``;
+            };
+            reader.onerror = (error) => {
+                console.error("Error reading file:", error);
+                alert("Failed to read file.");
+            };
+            reader.readAsText(file); // Or readAsDataURL, etc., depending on needs
+        }
+    });
 
     sendButton.addEventListener('click', () => {
         const message = chatInput.value.trim();
